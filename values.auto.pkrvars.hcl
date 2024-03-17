@@ -7,5 +7,7 @@ APP_NAME_1FT  = "Zabbix1"
 
 var.instance_standared = "r5dn.large"
 var.instance_ultimate = "r5dn.xlarge"
+AWS_DEFAULT_REGION  = "eu-central-1"
 
+CREDITTYPE=""
 #default   = "subnet-05bb983919aff8851"

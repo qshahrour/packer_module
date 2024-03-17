@@ -19,7 +19,7 @@ variable "profile" {
 variable "vpc_id" {
   type      = string
   default   = "current"
-  default       ="vpc-0d924ecc9c8e05b86"
+  #default       ="vpc-0d924ecc9c8e05b86"
 }
 
 variable "region" {
@@ -46,7 +46,7 @@ variable "BUILD_NUMBER" {
   default       ="1"
 }
 
-variable "instance_standared" {
+variable "instance_standard" {
   default       ="r5dn.large"
   description   ="The AMI build instance"
   type          =string
@@ -70,6 +70,11 @@ variable "associate_public_ip_address" {
 variable "ssh_interface" {
   type          = string
   default       = "public_ip"
+}
+
+
+variable "APP_NAME" {
+  default = "Zabbix"
 }
 
 variable "APP_NAME_1FT" {
@@ -96,10 +101,6 @@ variable "amazon-ami" {
   default   = "current"
 }
 
-variable "unlimitedCPUCredit" {
-  default   = []
-}
-
 variable "standardCPUCredit" {
   default   = []
 }
@@ -108,9 +109,13 @@ variable "ssh_user" {
   type      = string
   default   = "ubuntu"
 }
-+
+
+variable  "AWS_DEFAULT_REGION" {
+  default = "eu-central-1"
+}
+
 variable "unlimitedCPUCredit" {
-  type  = string
+  default     = []
 }
 
 variable "script_path" {
@@ -131,19 +136,20 @@ locals {
   root                = path.root
   scripts_folder      = "${path.root}/scripts"
   settings_file       = "${path.cwd}/settings.txt"
-  ami_name            = "${var.app_name}-prodcution"
+  ami_name            = "${var.APP_NAME}-prodcution"
   timestamp           = "${formatdate("YYYYMMDD'-'hhmmss", timestamp())}"
   creation_date       = "${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
+  build               = "$(curl http://169.254.169.254/latest/meta-data/ami-id)"
 }
 
 ########################################
 # => Writing our Sources
 source "amazon-ebs" "Zabbix1" {
-  name                = "packer-build-${var.APP_NAME_1FT}"
-  output              = "AWS AMI"
+  #name                = "packer-build-${var.APP_NAME}"
+  #output              = "AWS AMI"
   ami_description     = "amazon ubuntu AMI"
   ami_name            = "${var.ami_prefix}-${local.timestamp}"
-  instance_type       = "${var.instance_type}"
+  instance_type       = "${var.instance_standard}"
   region              = "${var.region}"
   source_ami          = "${var.ami_id}"
   #spot_instance_types       = ["t3.xlarge"]
@@ -185,8 +191,8 @@ source "amazon-ebs" "Zabbix1" {
 ################################################################################
 
 source "amazon-ebs" "Zabbix2" {
-  name                = "packer-build-${APP_NAME_2ND}"
-  output              = "AWS AMI"
+  #name                = "packer-build-${APP_NAME_2ND}"
+  #output              = "AWS AMI"
   ami_description     = "amazon ubuntu AMI"
   ami_name            = "${var.ami_prefix}-${local.timestamp}"
   instance_type       = "${var.instance_ultimate}"
@@ -238,23 +244,28 @@ sources = [
   "source.amazon-ebs.Zabbix2"
   ]
 
-  provider "local-shell" {
-    execute_command = [" ${local.creation_date}"]
+  #provisioner "shell" {
+  #  execute_command = [" ${local.creation_date}"]
+  #}
+
+  provisioner "file" {
+    source      = "./tf-packer.pub"
+    destination = "/tmp/tf-packer.pub"
   }
   provisioner "shell" {
-    inline = [
-      "sudo apt update --yes",
-      "sudo apt dist-upgrade --yes -qq"
+    environment_vars = [
+      "HOME_DIR=/home/ubuntu"
     ]
-    pause_before = "10s"
-    max_retries = 5
-    timeout = "5m"
+    script = "scripts/update.sh"
+    #pause_before = "10s"
+    #max_retries = 5
+    #timeout = "5m"
   }
 
   provisioner "shell" {
     inline = [
       "sudo apt-get update -y",
-      "sudo apt install --yes /-qq apt-transport-https lsb-release ca-certificates software-properties-common curl wget apt-utils git iputils-ping libicu-dev gnupg net-tools",
+      "sudo apt install --yes -qq apt-transport-https lsb-release ca-certificates software-properties-common curl wget apt-utils git iputils-ping libicu-dev gnupg net-tools",
       "sudo apt autoclean",
       "sudo apt-get update -y",
     ]
@@ -263,16 +274,17 @@ sources = [
     timeout = "5m"
   }
 
-  post-proccess "local-shell" {
-    command = ["echo ${local.timestamp}Runnning Docker Installation Script"]
-  }
+  #provisioner "shell" {
+  #  execute_command = ["echo ${local.timestamp}Runnning Docker Installation Script"]
+
+  #}
 
   provisioner "shell" {
     environment_vars = [
       "HOME_DIR=/home/ubuntu"
     ]
     execute_command   = "{{.Vars}} sudo -S -E bash -eux '{{.Path}}'"
-    expect_disconnect = true
+    #expect_disconnect = true
     script = "./scripts/install-docker.sh"
   }
 
@@ -293,42 +305,40 @@ sources = [
     script = "./scripts/install-compose.sh"
   }
 
-  post-processor "shell-local" {
-    command    = ["docker-compose --version && docker --version"]
+  #post-processor "shell-local" {
+  #  command    = ["docker-compose --version && docker --version"]
+  #}
+
+  provisioner "shell" {
+    only = ["amazon-ebs.Zabbix2"]
+    inline = [ 
+      "aws configure set region ${var.region} --profile ${var.profile}"
+      #"CREDITTYPE=$( ${var.AWS_DEFAULT_REGION}=eu-central-1 aws ec2 describe-instance-credit-specifications --instance-ids ${local.build} | jq --raw-output .InstanceCreditSpecifications|.[]|.CpuCredits )"
+      #"echo CPU Credit Specification is ${CREDITTYPE}", "[[ $CREDITTYPE == ${var.unlimitedCPUCredit} ]]"
+    ]
   }
 
   provisioner "shell" {
-    #only = ["amazon-ebs.Zabbix1"]
-    inline = [
-      "aws configure set region ${var.region} --profile ${var.profile}",\"CREDITTYPE=$( ${AWS_DEFAULT_REGION}=eu-central-2 aws ec2 describe-instance-credit-specifications --instance-ids ${build.ID} | jq --raw-output \".InstanceCreditSpecifications|.[]|.CpuCredits\" )",
-      "echo CPU Credit Specification is ${CREDITTYPE}", "[[ $CREDITTYPE == ${var.unlimitedCPUCredit} ]]"
-    ]
-  }
-
-  provisioner "shell-local" {
-    environment_vars = [
-      "HELLO_USER=packeruser",
-      "UUID=${build.PackerRunUUID}",
-      "HOME_DIR=/home/ubuntu",
-      "EPO_URLq="https://download.docker.com/linux/${DIST_ID}"
-    ]
+    environment_vars = ["HELLO_USER=packeruser", "UUID=${build.PackerRunUUID}", "HOME_DIR=/home/ubuntu"]
     execute_command   = "{{.Vars}} sudo -S -E bash -eux '{{.Path}}'"
-    expect_disconnect = true
+    #expect_disconnect = true
     script = "./scripts/install_powershell.sh"
   }
 
   ## This provisioner only runs for the 'first-example' source.
   provisioner "shell" {
+    #only =  ["amazon-ebs.Zabbix1"]
     inline = [
-      "aws configure set region ${var.region} --profile default",
-      "CREDITTYPE=$(aws ec2 describe-instance-credit-specifications --instance-ids ${build.ID}| jq --raw-output \".InstanceCreditSpecifications|.[]|.CpuCredits\")",
-      "echo CPU Credit Specification is $CREDITTYPE",
-      "[[ $CREDITTYPE == ${var.standardCPUCredit} ]]"
+      "aws configure set region ${var.region} --profile default"
+      #"CREDITTYPE=$( aws ec2 describe-instance-credit-specifications --instance-ids ${local.build}| jq --raw-output \".InstanceCreditSpecifications|.[]|.CpuCredits\")",
+      #"echo CPU Credit Specification is $CREDITTYPE",
+      #"[[ $CREDITTYPE == ${var.standardCPUCredit} ]]"
     ]
   }
 
   provisioner "file" {
-    source              = fileset(path.cwd, "docker-compose.yaml")
+    #source              = fileset(path.cwd, "docker-compose.yaml")
+    source              = "./docker-compose.yaml"
     destination         = "/home/${var.ssh_user}/docker-compose.yaml"
   }
 
@@ -337,11 +347,10 @@ sources = [
   }
 
   provisioner "shell" {
-    inline  = [
-      ["curl http://169.254.169.254/latest/meta-data/ami-id >> result.txt"]
+    inline  = ["curl http://169.254.169.254/latest/meta-data/ami-id >> result.txt"]
   }
 
-
+}
 #  # This provisioner only the second for the source.
   //provisioner "shell" {
     //environment_vars  = [ "HOME_DIR=/home/${var.ssh_user}" ]
