@@ -265,7 +265,7 @@ sources = [
   provisioner "shell" {
     inline = [
       "sudo apt-get update -y",
-      "sudo apt install --yes -qq apt-transport-https lsb-release ca-certificates software-properties-common curl wget apt-utils git iputils-ping libicu-dev gnupg net-tools",
+      "sudo apt install --yes -qq ca-certificates curl",
       "sudo apt autoclean",
       "sudo apt-get update -y",
     ]
@@ -276,7 +276,6 @@ sources = [
 
   #provisioner "shell" {
   #  execute_command = ["echo ${local.timestamp}Runnning Docker Installation Script"]
-
   #}
 
   provisioner "shell" {
@@ -284,7 +283,7 @@ sources = [
       "HOME_DIR=/home/ubuntu"
     ]
     execute_command   = "{{.Vars}} sudo -S -E bash -eux '{{.Path}}'"
-    #expect_disconnect = true
+    expect_disconnect = true
     script = "./scripts/install-docker.sh"
   }
 
@@ -311,11 +310,7 @@ sources = [
 
   provisioner "shell" {
     only = ["amazon-ebs.Zabbix2"]
-    inline = [ 
-      "aws configure set region ${var.region} --profile ${var.profile}"
-      #"CREDITTYPE=$( ${var.AWS_DEFAULT_REGION}=eu-central-1 aws ec2 describe-instance-credit-specifications --instance-ids ${local.build} | jq --raw-output .InstanceCreditSpecifications|.[]|.CpuCredits )"
-      #"echo CPU Credit Specification is ${CREDITTYPE}", "[[ $CREDITTYPE == ${var.unlimitedCPUCredit} ]]"
-    ]
+    inline = [ "aws configure set region ${var.region} --profile ${var.profile}"]
   }
 
   //provisioner "shell" {
@@ -327,7 +322,6 @@ sources = [
 
   ## This provisioner only runs for the 'first-example' source.
   provisioner "shell" {
-    #only =  ["amazon-ebs.Zabbix1"]
     inline = [
       "aws configure set region ${var.region} --profile default"
     ]
@@ -348,11 +342,4 @@ sources = [
   }
 
 }
-#  # This provisioner only the second for the source.
-  //provisioner "shell" {
-    //environment_vars  = [ "HOME_DIR=/home/${var.ssh_user}" ]
-    //execute_command   = "echo '${var.ssh_user}' | {{.Vars}} sudo -S -E sh -eux '{{.Path}}'"
-    //expect_disconnect = true
-#   // fileset will list files in etc/scripts sorted in an alphanumerical way.
-    //scripts           = fileset(".", "scripts/.sh")
-  //}
+

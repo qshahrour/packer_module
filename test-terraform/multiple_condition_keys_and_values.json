@@ -1,0 +1,24 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": [
+        "kms:GenerateDataKey",
+        "kms:Decrypt"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "ForAnyValue:StringEquals": {
+          "kms:EncryptionContext:aws:pi:service": "rds",
+          "kms:EncryptionContext:aws:rds:db-id": [
+            "db-AAAAABBBBBCCCCCDDDDDEEEEE",
+            "db-EEEEEDDDDDCCCCCBBBBBAAAAA"
+          ],
+          "kms:EncryptionContext:service": "pi"
+        }
+      }
+    }
+  ]
+} 
