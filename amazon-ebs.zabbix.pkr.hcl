@@ -330,9 +330,6 @@ sources = [
     #only =  ["amazon-ebs.Zabbix1"]
     inline = [
       "aws configure set region ${var.region} --profile default"
-      #"CREDITTYPE=$( aws ec2 describe-instance-credit-specifications --instance-ids ${local.build}| jq --raw-output \".InstanceCreditSpecifications|.[]|.CpuCredits\")",
-      #"echo CPU Credit Specification is $CREDITTYPE",
-      #"[[ $CREDITTYPE == ${var.standardCPUCredit} ]]"
     ]
   }
 
