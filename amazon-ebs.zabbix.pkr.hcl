@@ -164,6 +164,7 @@ source "amazon-ebs" "Zabbix1" {
 
   tags = {
     Name          = "ubuntu-base-packer"
+    OS_Version    = "Ubuntu 22.10"
   }
 
   spot_price                  = "auto"
