@@ -35,8 +35,27 @@ variable "BUILD_NUMBER" {
   default       ="1"
 }
 
-variable "instance_type" {
-  default       ="t3.large"
+variable "APP_NAME" {
+  default = "Zabbix"
+}
+
+variable "APP_NAME_1FT" {
+  type      = string
+  default   = "Zabbix1"
+}
+
+variable "APP_NAME_2ND" {
+  type      = string
+  default   = "Zabbix2"
+}
+variable "instance_standard" {
+  default       ="r5dn.large"
+  description   ="The AMI build instance"
+  type          =string
+}
+
+variable "instance_ultimate" {
+  default       ="r5dn.xlarge"
   description   ="The AMI build instance"
   type          =string
 }

@@ -318,12 +318,12 @@ sources = [
     ]
   }
 
-  provisioner "shell" {
-    environment_vars = ["HELLO_USER=packeruser", "UUID=${build.PackerRunUUID}", "HOME_DIR=/home/ubuntu"]
-    execute_command   = "{{.Vars}} sudo -S -E bash -eux '{{.Path}}'"
-    #expect_disconnect = true
-    script = "./scripts/install_powershell.sh"
-  }
+  //provisioner "shell" {
+  //  environment_vars = ["HELLO_USER=packeruser", "UUID=${build.PackerRunUUID}", "HOME_DIR=/home/ubuntu"]
+  //  execute_command   = "{{.Vars}} sudo -S -E bash -eux '{{.Path}}'"
+  //  #expect_disconnect = true
+  //  script = "./scripts/install_powershell.sh"
+  //}
 
   ## This provisioner only runs for the 'first-example' source.
   provisioner "shell" {
