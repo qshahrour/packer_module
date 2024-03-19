@@ -24,7 +24,7 @@ WORKDIR $DIR
 FROM base AS deps
 
 RUN --mount=type=bind,target=.,rw \
-  --mount=type=cache,target=/src/node_modules \
+  --mount=type=cache,target=$DIR/node_modules \
   npm install && mkdir /vendor && cp package.json && cp package-lock.json
 
 
@@ -39,7 +39,7 @@ RUN --mount=type=bind,target=.,rw <<EO
 set -e
 git add -A
 cp -rf /vendor/* .
-if [ -n "$(git status --porcelain -- yarn.lock)" ]; then
+if [ -n "$( git status --porcelain -- package.json )" ]; then
 echo >&2 'ERROR: Vendor result differs. Please vendor your package with "docker buildx bake vendor-update"'
 git status --porcelain -- yarn.lock
 exit 1
