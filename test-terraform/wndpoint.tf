@@ -1,4 +1,7 @@
-data "aws_iam_policy_document" "example" {
+# ==================================================
+## IAM Policy Creation ##
+# ==================================================
+data "aws_iam_policy_document" "HttpPolicyDocument" {
   statement {
     sid = "1"
 
@@ -45,13 +48,13 @@ data "aws_iam_policy_document" "example" {
   }
 }
 
-resource "aws_iam_policy" "example" {
-  name   = "example_policy"
+resource "aws_iam_policy" "HttpPolicy" {
+  name   = "Policy"
   path   = "/"
-  policy = data.aws_iam_policy_document.example.json
+  policy = data.aws_iam_policy_document.Policy.json
 }
 
-data "aws_iam_policy_document" "example_multiple_condition_keys_and_values" {
+data "aws_iam_policy_document" "MultipleConditionKeys&Values" {
   statement {
     actions = [
       "kms:Decrypt",
@@ -82,7 +85,7 @@ data "aws_iam_policy_document" "example_multiple_condition_keys_and_values" {
 }
 
 
-data "aws_iam_policy_document" "event_stream_bucket_role_assume_role_policy" {
+data "aws_iam_policy_document" "EventStreamBucketRole" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -104,7 +107,7 @@ data "aws_iam_policy_document" "event_stream_bucket_role_assume_role_policy" {
 }
 
 #Example Using A Source Document
-data "aws_iam_policy_document" "source" {
+data "aws_iam_policy_document" "Source" {
   statement {
     actions   = ["ec2:*"]
     resources = ["*"]
@@ -118,8 +121,8 @@ data "aws_iam_policy_document" "source" {
   }
 }
 
-data "aws_iam_policy_document" "source_document_example" {
-  source_policy_documents = [data.aws_iam_policy_document.source.json]
+data "aws_iam_policy_document" "SourceDocument" {
+  source_policy_documents = [data.aws_iam_policy_document.Source.json]
 
   statement {
     sid = "SidToOverride"
@@ -133,7 +136,7 @@ data "aws_iam_policy_document" "source_document_example" {
   }
 }
 #Example Using An Override Document
-data "aws_iam_policy_document" "override" {
+data "aws_iam_policy_document" "OverRide" {
   statement {
     sid = "SidToOverride"
 
@@ -142,8 +145,8 @@ data "aws_iam_policy_document" "override" {
   }
 }
 
-data "aws_iam_policy_document" "override_policy_document_example" {
-  override_policy_documents = [data.aws_iam_policy_document.override.json]
+data "aws_iam_policy_document" "OverRidePolicyDocument" {
+  override_policy_documents = [data.aws_iam_policy_document.OverRide.json]
 
   statement {
     actions   = ["ec2:*"]
@@ -156,33 +159,32 @@ data "aws_iam_policy_document" "override_policy_document_example" {
     actions = ["s3:*"]
 
     resources = [
-      "arn:aws:s3:::somebucket",
-      "arn:aws:s3:::somebucket/*",
+      "arn:aws:s3:::bucket",
+      "arn:aws:s3:::bucket/*",
     ]
   }
 }
 
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Action": "ec2:*",
-      "Resource": "*"
-    },
-    {
-      "Sid": "SidToOverride",
-      "Effect": "Allow",
-      "Action": "s3:*",
-      "Resource": "*"
-    }
-  ]
-}
+//{
+// "Version": "2012-10-17",
+// "Statement": [
+//   {
+//     "Sid": "",
+//     "Effect": "Allow",
+//     "Resource": "*"
+//   },
+//   {
+//     "Sid": "SidToOverride",
+//     "Effect": "Allow",
+//     "Action": "s3:*",
+//     "Resource": "*"
+//  }
+// ]
+//}
 
 
 
-data "aws_iam_policy_document" "source" {
+data "aws_iam_policy_document" "Source" {
   statement {
     sid       = "OverridePlaceholder"
     actions   = ["ec2:DescribeAccountAttributes"]
@@ -190,7 +192,7 @@ data "aws_iam_policy_document" "source" {
   }
 }
 
-data "aws_iam_policy_document" "override" {
+data "aws_iam_policy_document" "OverRide" {
   statement {
     sid       = "OverridePlaceholder"
     actions   = ["s3:GetObject"]
@@ -198,24 +200,24 @@ data "aws_iam_policy_document" "override" {
   }
 }
 
-data "aws_iam_policy_document" "politik" {
-  source_policy_documents   = [data.aws_iam_policy_document.source.json]
-  override_policy_documents = [data.aws_iam_policy_document.override.json]
+data "aws_iam_policy_document" "PoliTik" {
+  source_policy_documents   = [data.aws_iam_policy_document.Source.json]
+  override_policy_documents = [data.aws_iam_policy_document.OverRide.json]
 }
 
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "OverridePlaceholder",
-      "Effect": "Allow",
-      "Action": "s3:GetObject",
-      "Resource": "*"
-    }
-  ]
-}
+//{
+//  "Version": "2012-10-17",
+//  "Statement": [
+//    {
+//      "Sid": "OverridePlaceholder",
+//      "Effect": "Allow",
+//      "Action": "s3:GetObject",
+//      "Resource": "*"
+//    }
+//  ]
+//}
 
-data "aws_iam_policy_document" "source_one" {
+data "aws_iam_policy_document" "SourceOne" {
   statement {
     actions   = ["ec2:*"]
     resources = ["*"]
@@ -229,7 +231,7 @@ data "aws_iam_policy_document" "source_one" {
   }
 }
 
-data "aws_iam_policy_document" "source_two" {
+data "aws_iam_policy_document" "SourceTwo" {
   statement {
     sid = "UniqueSidTwo"
 
@@ -243,44 +245,44 @@ data "aws_iam_policy_document" "source_two" {
   }
 }
 
-data "aws_iam_policy_document" "combined" {
+data "aws_iam_policy_document" "ComBined" {
   source_policy_documents = [
-    data.aws_iam_policy_document.source_one.json,
-    data.aws_iam_policy_document.source_two.json
+    data.aws_iam_policy_document.SourceOne.json,
+    data.aws_iam_policy_document.SourceTwo.json
   ]
 }
 
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Action": "ec2:*",
-      "Resource": "*"
-    },
-    {
-      "Sid": "UniqueSidOne",
-      "Effect": "Allow",
-      "Action": "s3:*",
-      "Resource": "*"
-    },
-    {
-      "Sid": "UniqueSidTwo",
-      "Effect": "Allow",
-      "Action": "iam:*",
-      "Resource": "*"
-    },
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Action": "lambda:*",
-      "Resource": "*"
-    }
-  ]
-}
+//{
+//  "Version": "2012-10-17",
+//  "Statement": [
+//    {
+//      "Sid": "",
+//      "Effect": "Allow",
+//      "Action": "ec2:*",
+//      "Resource": "*"
+//    },
+///    {
+//      "Sid": "UniqueSidOne",
+//      "Effect": "Allow",
+//      "Action": "s3:*",
+//      "Resource": "*"
+//    },
+//   {
+//      "Sid": "UniqueSidTwo",
+//      "Effect": "Allow",
+//      "Action": "iam:*",
+//      "Resource": "*"
+//    },
+//    {
+//      "Sid": "",
+//      "Effect": "Allow",
+//      "Action": "lambda:*",
+//      "Resource": "*"
+//    }
+//  ]
+//}
 
-data "aws_iam_policy_document" "policy_one" {
+data "aws_iam_policy_document" "PolicyOne" {
   statement {
     sid    = "OverridePlaceHolderOne"
     effect = "Allow"
@@ -290,7 +292,7 @@ data "aws_iam_policy_document" "policy_one" {
   }
 }
 
-data "aws_iam_policy_document" "policy_two" {
+data "aws_iam_policy_document" "PolicyTwo" {
   statement {
     effect    = "Allow"
     actions   = ["ec2:*"]
@@ -306,7 +308,7 @@ data "aws_iam_policy_document" "policy_two" {
   }
 }
 
-data "aws_iam_policy_document" "policy_three" {
+data "aws_iam_policy_document" "PolicyThree" {
   statement {
     sid    = "OverridePlaceHolderOne"
     effect = "Deny"
@@ -318,9 +320,9 @@ data "aws_iam_policy_document" "policy_three" {
 
 data "aws_iam_policy_document" "combined" {
   override_policy_documents = [
-    data.aws_iam_policy_document.policy_one.json,
-    data.aws_iam_policy_document.policy_two.json,
-    data.aws_iam_policy_document.policy_three.json
+    data.aws_iam_policy_document.PolicyOne.json,
+    data.aws_iam_policy_document.PolicyTwo.json,
+    data.aws_iam_policy_document.PolicyThree.json
   ]
 
   statement {

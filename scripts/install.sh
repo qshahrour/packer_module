@@ -7,7 +7,8 @@ sudo apt-get update -y
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
 sudo apt-get update
 
-sudo apt-get -y -qq install curl wget git vim apt-transport-https ca-certificates lsb-release software-properties-common apt-utils git iputils-ping libicu-dev gnupg net-tools
+sudo apt-get install -y --no-install-recommends \
+  curl wget git vim apt-transport-https ca-certificates lsb-release software-properties-common apt-utils git iputils-ping libicu-dev gnupg net-tools
 sudo add-apt-repository ppa:longsleep/golang-backports -y
 sudo apt-get -y -qq install golang-go
 

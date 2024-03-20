@@ -5,6 +5,8 @@
 #
 set -e
 
+ecport DEBIAN_FRONTEND=noninteractive
+
 usage() {
   echo "Usage: $0 -p packfile -e environment -d false"
   exit 1

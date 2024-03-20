@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+ecport DEBIAN_FRONTEND=noninteractive
+
 cd /tmp/ || exit
 VERSION="0.12.16"
 sudo apt install -y zip unzip

@@ -80,31 +80,32 @@ data "aws_iam_policy_document" "example_multiple_condition_keys_and_values" {
 
   }
 }
+###################################
 
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Action": [
-        "kms:GenerateDataKey",
-        "kms:Decrypt"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "ForAnyValue:StringEquals": {
-          "kms:EncryptionContext:aws:pi:service": "rds",
-          "kms:EncryptionContext:aws:rds:db-id": [
-            "db-AAAAABBBBBCCCCCDDDDDEEEEE",
-            "db-EEEEEDDDDDCCCCCBBBBBAAAAA"
-          ],
-          "kms:EncryptionContext:service": "pi"
-        }
-      }
-    }
-  ]
-}
+//{
+//  "Version": "2012-10-17",
+//  "Statement": [
+//    {
+//      "Sid": "",
+//      "Effect": "Allow",
+//      "Action": [
+//        "kms:GenerateDataKey",
+//        "kms:Decrypt"
+//      ],
+//      "Resource": "*",
+//      "Condition": {
+//        "ForAnyValue:StringEquals": {
+//          "kms:EncryptionContext:aws:pi:service": "rds",
+//          "kms:EncryptionContext:aws:rds:db-id": [
+//            "db-AAAAABBBBBCCCCCDDDDDEEEEE",
+//            "db-EEEEEDDDDDCCCCCBBBBBAAAAA"
+//          ],
+//          "kms:EncryptionContext:service": "pi"
+//        }
+//      }
+//    }
+//  ]
+//}
 
 data "aws_iam_policy_document" "event_stream_bucket_role_assume_role_policy" {
   statement {

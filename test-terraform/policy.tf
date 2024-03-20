@@ -1,4 +1,10 @@
-data "aws_iam_policy_document" "example" {
+# ==================================================
+# => AWS IAM Policy Document
+#   * policy_document
+#   * policy
+# ==================================================
+
+data "aws_iam_policy_document" "HttpPolicyDocument" {
   statement {
     sid = "1"
 
@@ -45,13 +51,13 @@ data "aws_iam_policy_document" "example" {
   }
 }
 
-resource "aws_iam_policy" "example" {
+resource "aws_iam_policy" "HttpPolicy" {
   name   = "example_policy"
   path   = "/"
-  policy = data.aws_iam_policy_document.example.json
+  policy = data.aws_iam_policy_document.HttpPolicyDocument.json
 }
 
-data "aws_iam_policy_document" "example_multiple_condition_keys_and_values" {
+data "aws_iam_policy_document" "multiple_condition_keys_and_values" {
   statement {
     actions = [
       "kms:Decrypt",

@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eux -o pipefail
 
+ecport DEBIAN_FRONTEND=noninteractive
 # Allow toggling components to install and update based off flags
 UPDATE_DOCKER=1
 UPDATE_DOCKER_COMPOSE=1
