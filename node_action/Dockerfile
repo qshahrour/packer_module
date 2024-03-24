@@ -14,7 +14,8 @@ RUN set -eux; \
     gnupg \
     bzip2
   ; \
-  rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /var/logs/*
 
 ENV DIR /src
 
